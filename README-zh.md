@@ -1,0 +1,305 @@
+# LiveKit AgentScope 语音智能体
+
+基于 LiveKit 的实时语音 AI 智能体，集成多种语音识别和语音合成服务提供商，并支持 AgentScope 框架。
+
+## 🎯 功能特点
+
+- **实时语音处理**: 低延迟的语音识别和语音合成
+- **多种 TTS 服务提供商**:
+  - **云端服务**: ElevenLabs、Minimax、QwenTTS
+  - **本地服务**: KokoroTTS、IndexTTS 1.5（需要特定下载版本）
+- **语音识别**: 通义千问 ASR 中文语音识别
+- **性能监控**: 全面的指标收集和实时监控
+- **双语支持**: 中英文语言能力
+- **WebRTC 集成**: 基于 LiveKit 的可扩展实时通信
+- **现代 Web 界面**: 基于 Next.js 的 React 前端
+
+## 🏗️ 架构设计
+
+### 后端 (Python)
+- **语音智能体核心**: 基于 LiveKit 的智能体实现
+- **自定义服务提供商**: 可扩展的语音识别和合成服务
+- **指标收集**: 实时性能监控和分析
+- **AgentScope 集成**: 与 AgentScope 框架的无缝集成
+
+### 前端 (React)
+- **Next.js 应用**: 用于语音交互的现代 Web 界面
+- **LiveKit 客户端 SDK**: 实时音频通信
+- **响应式设计**: 基于 Tailwind CSS 和现代 React 模式
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Python 3.12+
+- Node.js 18+
+- pnpm (用于前端依赖管理)
+- uv (Python 包管理器)
+- LiveKit CLI
+
+### 后端设置
+
+1. **克隆并设置项目**:
+```bash
+git clone <repository-url>
+cd livekit-agentscope-voice-agent
+
+# 使用 uv 安装依赖
+uv sync
+
+# 安装 LiveKit CLI
+# 遵循官方安装指南: https://docs.livekit.io/home/cli/
+# 或者通过 pip 安装（替代方法）:
+pip install livekit-cli
+
+# 复制环境模板
+cp .env.example .env
+# 编辑 .env 文件，填入您的 API 密钥和配置
+```
+
+2. **配置 LiveKit 环境**:
+```bash
+# 通过免费注册获取 LiveKit Server API 密钥:
+# https://cloud.livekit.io/ (云端版) 或自托管服务器
+
+# 在 .env 文件中配置：
+LIVEKIT_API_KEY=your_livekit_api_key
+LIVEKIT_API_SECRET=your_livekit_api_secret
+LIVEKIT_URL=wss://your-livekit-server.url
+```
+
+3. **运行语音智能体**:
+```bash
+# 基础版本
+uv run agent_server_demo.py start
+
+# 带性能监控的版本
+uv run agent_server_with_metrics.py start
+```
+
+### 前端设置
+
+> **注意**: 前端基于 [livekit-examples/agent-starter-react](https://github.com/livekit-examples/agent-starter-react)
+
+1. **进入前端目录**:
+```bash
+cd agent-starter-react
+```
+
+2. **（可选）更新到最新版本**:
+```bash
+# 如果需要拉取 LiveKit examples 的最新更新：
+git remote add upstream https://github.com/livekit-examples/agent-starter-react.git
+git fetch upstream
+git merge upstream/main
+```
+
+3. **安装依赖**:
+```bash
+pnpm install
+```
+
+4. **运行开发服务器**:
+```bash
+pnpm dev
+```
+
+5. **打开浏览器** 访问 `http://localhost:3000`
+
+## ⚙️ 配置说明
+
+### 环境变量
+
+`.env` 文件中必需的环境变量：
+
+```env
+# 语言模型
+DEEPSEEK_API_KEY=your_deepseek_api_key
+
+# 语音服务
+ELEVEN_API_KEY=your_elevenlabs_api_key
+MINIMAX_API_KEY=your_minimax_api_key
+DASHSCOPE_API_KEY=your_qwen_asr_api_key
+
+# LiveKit 配置
+LIVEKIT_API_KEY=your_livekit_api_key
+LIVEKIT_API_SECRET=your_livekit_api_secret
+LIVEKIT_URL=wss://your-livekit-server.url
+```
+
+### 语音服务提供商配置
+
+#### 通义千问 ASR (中文语音识别)
+- 模型: `qwen3-asr-flash`
+- 语言: `zh` (中文)
+- 特性: 逆文本规范化、流式支持
+
+#### TTS 服务提供商
+
+##### 云端 TTS
+1. **ElevenLabs TTS**: 高质量语音合成，支持多种语音选项
+   - API 密钥: `ELEVEN_API_KEY`
+   - 自然语音，情感表达丰富
+
+2. **Minimax TTS**: 云端中英文合成服务
+   - API 密钥: `MINIMAX_API_KEY`
+   - 模型: `speech-2.6-hd`，多种语音选项
+   - 强大的中文支持
+
+3. **Qwen TTS**: 阿里巴巴文本转语音服务
+   - API 密钥: `DASHSCOPE_API_KEY` (与 ASR 共用)
+   - 针对中文优化
+
+##### 本地 TTS
+
+1. **Kokoro TTS**: 本地合成引擎
+   - **下载地址**: [Kokoro TTS 安装包](https://pan.quark.cn/s/77eb46560914)
+   - **参考教程**: [B站设置教程](https://www.bilibili.com/video/BV1ziuBzyEjF/)
+   - **接口格式**: `http://localhost:9880/?text={文本}&speaker={音频路径}&speed=1.0`
+   - **默认说话人**:
+     - `speaker_en=am_adam_男.pt`
+     - `speaker_zh=zm_029.pt`
+   - 无需网络连接
+   - 快速推理速度
+
+2. **Index-TTS-v1.5**: 增强型并发本地 TTS
+   - **下载地址**: [Index-TTS-v1.5 安装包](https://pan.quark.cn/s/d3d521cccf91)
+   - **批量任务**: [批量任务文件](https://pan.quark.cn/s/eb3d65587e6b)
+   - **参考教程**: [B站设置教程](https://www.bilibili.com/video/BV1RkT2zREHs)
+   - **接口格式**: `http://localhost:9880/?text={文本}&speaker={语音模型}&volume=1.9`
+   - **特性**:
+     - 并发处理（解决多设备请求崩溃问题）
+     - 音量控制
+     - 批量任务支持
+     - API 接口支持
+     - 支持 RTX 50 系列显卡
+     - 4G 显存可用
+   - 高质量语音合成
+   - 自定义语音模型支持
+
+3. **FishSpeech 1.5.1**: 备选本地 TTS 方案
+   - **下载地址**: [FishSpeech 安装包](https://pan.quark.cn/s/bc0db941ebda)
+   - **参考教程**: [B站设置教程](https://www.bilibili.com/video/BV1YrYjzNEHf)
+   - **接口格式**: `http://localhost:9880?text={文本}&speaker={语音描述}`
+   - **注意**: 需要根据视频教程自行实现 provider
+   - 高质量女声支持
+   - 设置说明在 `providers/` 目录中
+
+## 📊 监控与指标
+
+智能体包含全面的性能监控功能：
+
+- **LLM 指标**: Token 使用量、处理速度、首字节时间
+- **STT 指标**: 识别延迟、实时因子、流式性能
+- **TTS 指标**: 首字节延迟、合成时间、音频时长
+- **EOU 指标**: 语句结束检测性能
+
+指标会发送到 WebSocket 监控服务器，并输出到控制台用于调试。
+
+## 🛠️ 开发
+
+### 项目结构
+
+```
+livekit-agentscope-voice-agent/
+├── agent_server_demo.py              # 基础语音智能体实现
+├── agent_server_with_metrics.py      # 带性能监控的智能体
+├── providers/                        # 自定义语音服务提供商实现
+│   ├── qwen_asr_stt.py              # 通义千问语音识别服务
+│   ├── kokoro_tts.py                # Kokoro 语音合成服务
+│   ├── local_indexTTS.py            # 本地 Index TTS 服务
+│   └── local_indextts_chaos.py      # 备用本地 TTS 服务
+├── agent-starter-react/             # React 前端（基于 livekit-examples）
+│   └── # 原始来源: https://github.com/livekit-examples/agent-starter-react
+└── pyproject.toml                   # Python 项目配置
+```
+
+### 添加自定义服务提供商
+
+1. **在 `providers/` 目录中创建新的服务提供商**
+2. **继承相应的 LiveKit 基类**:
+   - `stt.STT` 用于语音识别
+   - `tts.TTS` 用于语音合成
+3. **实现必需的方法** 并处理身份验证
+4. **如需性能监控，添加指标收集**
+5. **更新智能体配置** 以使用您的新的服务提供商
+
+### 运行测试
+
+```bash
+# Python 测试（如果已实现）
+pytest
+
+# 前端测试
+cd agent-starter-react
+pnpm test
+```
+
+### 生产环境构建
+
+```bash
+# 后端
+uv sync --production
+
+# 前端
+cd agent-starter-react
+pnpm build
+pnpm start
+```
+
+### 前端维护
+
+由于前端基于 LiveKit examples，您可能需要定期保持更新：
+
+```bash
+cd agent-starter-react
+
+# 定期检查更新
+git remote -v  # 验证上游远程仓库是否存在
+git fetch upstream
+git log --oneline HEAD..upstream/main  # 查看新内容
+
+# 需要时合并更新
+git merge upstream/main
+
+# 解决任何冲突并测试
+pnpm install
+pnpm dev
+```
+
+## 🌐 部署
+
+### 后端部署
+
+1. **部署到云服务器** 或使用 Docker 容器化
+2. **为生产环境配置环境变量**
+3. **设置 LiveKit 服务器**（云端或自托管）
+4. **配置监控服务器** 用于指标收集
+
+### 前端部署
+
+```bash
+cd agent-starter-react
+pnpm build
+# 将 .next 目录部署到您的托管平台
+```
+
+## 🤝 贡献
+
+1. Fork 该仓库
+2. 创建功能分支
+3. 进行您的更改
+4. 如适用，添加测试
+5. 提交拉取请求
+
+## 📝 许可证
+
+本项目采用 MIT 许可证 - 详情请参阅 LICENSE 文件。
+
+## 🔗 相关项目
+
+- [LiveKit](https://livekit.io/) - 开源 WebRTC 基础设施
+- [AgentScope](https://github.com/modelscope/AgentScope) - 多智能体通信框架
+- [Qwen ASR](https://github.com/QwenLM/Qwen) - 阿里巴巴语音识别模型
+- [Kokoro TTS](https://github.com/hexgrad/kokoro) - 高质量文本转语音合成
+
