@@ -294,6 +294,62 @@ pnpm install
 pnpm dev
 ```
 
+## 🔧 Network Configuration
+
+### WSL2 Port Forwarding for LAN Access
+
+When running the LiveKit server in WSL2, you need to configure port forwarding to allow access from other devices on the local network.
+
+**Problem**: WSL2 uses NAT networking, so services running inside WSL2 are not accessible from other devices on the LAN, even though they're accessible from the Windows host.
+
+**Solution**:
+
+1. **Get WSL2 IP Address**:
+```bash
+hostname -I
+# Example output: 172.20.10.102
+```
+
+2. **Configure Windows Port Forwarding** (run in PowerShell as Administrator):
+```powershell
+# Add port forwarding rules for LiveKit ports
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=7880 connectaddress=172.20.10.102 connectport=7880
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=7881 connectaddress=172.20.10.102 connectport=7881
+
+# Verify the rules
+netsh interface portproxy show all
+
+# To delete rules (if needed):
+# netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=7880
+# netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=7881
+```
+
+3. **Configure Windows Firewall**:
+- Open "Windows Defender Firewall with Advanced Security"
+- Create Inbound Rules for TCP ports 7880 and 7881
+- Allow connections for these ports
+
+4. **Start LiveKit Server with WSL Binding**:
+```bash
+# Inside WSL2, start LiveKit server with proper binding
+livekit-server --dev --bind 0.0.0.0
+```
+
+5. **Access from LAN Devices**:
+- Get Windows host IP: `ipconfig` (look for the main network adapter)
+- Access LiveKit via: `http://[Windows_Host_IP]:7880`
+
+**Verification Steps**:
+1. Check LiveKit server is listening on all interfaces: `netstat -tlnp | grep livekit`
+2. Test access from Windows host: `http://localhost:7880`
+3. Test access from other LAN devices using Windows IP: `http://[Windows_IP]:7880`
+
+**Troubleshooting**:
+- Ensure Windows firewall allows ports 7880 and 7881
+- Check for corporate/school network restrictions
+- Verify antivirus software isn't blocking connections
+- Make sure WSL2 IP hasn't changed (it can change after reboot)
+
 ## 🌐 Deployment
 
 ### Backend Deployment
