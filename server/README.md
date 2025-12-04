@@ -316,10 +316,32 @@ PORT=8008
 
 ### Starting Services
 
+#### Method 1: Using Startup Scripts (Recommended)
+
+The project includes convenient startup scripts to launch all services sequentially:
+
 ```bash
-# Start Token Server
-cd /path/to/livekit-agentscope-voice-agent
-python server/server.py
+# Start all services (LiveKit server + Token server + Voice agent)
+cd server
+./start_services.sh
+
+# Stop all services
+./stop_services.sh
+```
+
+The startup script will:
+1. **Start LiveKit server** on port 7880
+2. **Start Token server** on port 8008
+3. **Start Voice agent** with AgentScope integration
+4. Wait for each service to be ready before starting the next
+5. Display connection URLs for clients
+
+#### Method 2: Manual Startup
+
+```bash
+# Start Token Server only
+cd /path/to/livekit-agentscope-voice-agent/server
+uv run python server.py
 
 # Token Server will start at http://localhost:8008
 # Main endpoints:
@@ -327,6 +349,25 @@ python server/server.py
 # - POST /rooms - Create room
 # - GET /health - Health check
 ```
+
+#### Complete Development Setup
+
+For a complete development environment, you need to run all three services:
+
+1. **LiveKit Server** (WebRTC media server)
+   ```bash
+   livekit-server --dev --bind 0.0.0.0 --port 7880
+   ```
+
+2. **Token Server** (Authentication service)
+   ```bash
+   cd server && uv run python server.py
+   ```
+
+3. **Voice Agent** (AgentScope integration)
+   ```bash
+   cd .. && uv run python agent_server_demo.py
+   ```
 
 ## Troubleshooting
 
