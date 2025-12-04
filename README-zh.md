@@ -58,11 +58,47 @@ cp .env.example .env
 ```
 
 2. **配置 LiveKit 环境**:
-```bash
-# 通过免费注册获取 LiveKit Server API 密钥:
-# https://cloud.livekit.io/ (云端版) 或自托管服务器
 
-# 在 .env 文件中配置：
+您有两种 LiveKit 服务器设置选项：
+
+#### 选项 1：自托管 LiveKit 服务器（推荐用于开发）
+
+对于本地开发，您可以部署自己的 LiveKit 服务器：
+
+**Linux 安装：**
+```bash
+curl -sSL https://get.livekit.io | bash
+```
+
+**macOS 安装：**
+```bash
+brew update && brew install livekit
+```
+
+**启动开发服务器：**
+```bash
+livekit-server --dev
+```
+
+**默认开发凭据：**
+- API 密钥: `devkey`
+- API 密码: `secret`
+- URL: `ws://localhost:7880`
+
+有关生产部署和自定义配置，请参阅 [LiveKit 部署指南](https://docs.livekit.io/home/self-hosting/deployment/)。
+
+#### 选项 2：LiveKit 云服务
+
+在 [https://cloud.livekit.io/](https://cloud.livekit.io/) 注册免费账户
+
+**配置环境 (.env)：**
+```bash
+# 本地开发服务器
+LIVEKIT_API_KEY=devkey
+LIVEKIT_API_SECRET=secret
+LIVEKIT_URL=ws://localhost:7880
+
+# 或云部署
 LIVEKIT_API_KEY=your_livekit_api_key
 LIVEKIT_API_SECRET=your_livekit_api_secret
 LIVEKIT_URL=wss://your-livekit-server.url
@@ -79,25 +115,22 @@ uv run agent_server_with_metrics.py start
 
 ### 前端设置
 
-> **注意**: 前端基于 [livekit-examples/agent-starter-react](https://github.com/livekit-examples/agent-starter-react)
+前端基于 [livekit-examples/agent-starter-react](https://github.com/livekit-examples/agent-starter-react)，您需要单独克隆：
 
-1. **进入前端目录**:
+1. **克隆前端仓库**:
 ```bash
+git clone https://github.com/livekit-examples/agent-starter-react.git
 cd agent-starter-react
 ```
 
-2. **（可选）更新到最新版本**:
-```bash
-# 如果需要拉取 LiveKit examples 的最新更新：
-git remote add upstream https://github.com/livekit-examples/agent-starter-react.git
-git fetch upstream
-git merge upstream/main
-```
-
-3. **安装依赖**:
+2. **安装依赖**:
 ```bash
 pnpm install
 ```
+
+3. **配置 LiveKit 连接**:
+   - 更新前端中的连接设置以匹配您的 LiveKit 服务器配置
+   - 本地开发时使用上述提到的开发凭据
 
 4. **运行开发服务器**:
 ```bash
@@ -209,9 +242,10 @@ livekit-agentscope-voice-agent/
 │   ├── kokoro_tts.py                # Kokoro 语音合成服务
 │   ├── local_indexTTS.py            # 本地 Index TTS 服务
 │   └── local_indextts_chaos.py      # 备用本地 TTS 服务
-├── agent-starter-react/             # React 前端（基于 livekit-examples）
-│   └── # 原始来源: https://github.com/livekit-examples/agent-starter-react
 └── pyproject.toml                   # Python 项目配置
+
+# 前端（需要单独克隆）
+git clone https://github.com/livekit-examples/agent-starter-react.git
 ```
 
 ### 添加自定义服务提供商
@@ -247,22 +281,13 @@ pnpm build
 pnpm start
 ```
 
-### 前端维护
+### 前端更新
 
-由于前端基于 LiveKit examples，您可能需要定期保持更新：
+要将前端更新到最新版本：
 
 ```bash
 cd agent-starter-react
-
-# 定期检查更新
-git remote -v  # 验证上游远程仓库是否存在
-git fetch upstream
-git log --oneline HEAD..upstream/main  # 查看新内容
-
-# 需要时合并更新
-git merge upstream/main
-
-# 解决任何冲突并测试
+git pull origin main
 pnpm install
 pnpm dev
 ```
@@ -295,6 +320,49 @@ pnpm build
 ## 📝 许可证
 
 本项目采用 MIT 许可证 - 详情请参阅 LICENSE 文件。
+
+## 🎯 更多示例和资源
+
+### LiveKit 示例应用程序
+
+除了包含的 React 前端，您还可以探索这些官方 LiveKit 示例：
+
+- **[LiveKit Meet](https://github.com/livekit-examples/meet)** - 类似 Zoom/Meet 的视频会议应用
+- **[LiveKit Agents 示例](https://github.com/livekit/agents/tree/main/examples)** - 各种语音智能体实现
+- **[空间音频示例](https://github.com/livekit-examples/spatial-audio)** - 3D 空间音频演示
+
+### 服务器自定义和管理
+
+有关高级服务器设置和自定义，请参阅以下指南：
+
+#### 令牌生成
+- **[生成令牌](https://docs.livekit.io/home/server/generating-tokens/)** - 学习如何为参与者创建身份验证令牌
+- 自定义令牌验证和权限
+- 房间访问控制和安全
+
+#### 房间管理
+- **[管理房间](https://docs.livekit.io/home/server/managing-rooms/)** - 创建、配置和管理房间
+- 房间属性和配置选项
+- 房间生命周期管理
+
+#### 参与者管理
+- **[管理参与者](https://docs.livekit.io/home/server/managing-participants/)** - 控制参与者权限和访问
+- 跟踪参与者状态和元数据
+- 处理参与者和事件审核
+
+### 服务器端集成示例
+
+```python
+# 示例：为房间访问生成令牌
+from livekit import api
+
+livekit_api = api.LiveKitAPI()
+token = livekit_api.create_token(
+    api.VideoGrant(room_join=True, room="my-room"),
+    identity="user-123",
+    name="显示名称"
+)
+```
 
 ## 🔗 相关项目
 
