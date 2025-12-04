@@ -24,6 +24,7 @@
 
 ### 前端 (React)
 - **Next.js 应用**: 用于语音交互的现代 Web 界面
+- **React Native 客户端**: iOS 和 Android 移动应用
 - **LiveKit 客户端 SDK**: 实时音频通信
 - **响应式设计**: 基于 Tailwind CSS 和现代 React 模式
 
@@ -139,6 +140,50 @@ pnpm dev
 
 5. **打开浏览器** 访问 `http://localhost:3000`
 
+### React Native 移动端设置
+
+项目提供了 React Native 移动客户端的设置指导，位于 `react-native/` 目录中。该目录包含详细的设置文档，但您需要克隆实际的 React Native 项目：
+
+1. **克隆 React Native 项目**:
+```bash
+git clone https://github.com/livekit-examples/agent-starter-react-native.git
+cd agent-starter-react-native
+```
+
+2. **参考设置指导**:
+   - 查看本项目中的 `react-native/README-zh.md` 获取详细的本地连接流程
+   - 该文档包含如何连接本地 LiveKit 服务器、Token 服务器和 Agent 的完整步骤
+
+3. **安装依赖**:
+```bash
+bun install
+```
+
+4. **构建项目**（首次使用前必须进行）:
+```bash
+# iOS 模拟器
+bun expo run:ios
+
+# 真机设备
+bun expo run:ios --device
+
+# Android 设备
+bunx expo run:android
+```
+
+5. **配置环境**:
+   - 复制 `.env.example` 到 `.env`
+   - 设置 `EXPO_PUBLIC_TOKEN_SERVER_URL` 指向您的令牌服务器
+   - 不同设备的 IP 配置：
+     - iOS 模拟器：`http://127.0.0.1:8008/token` 或主机局域网 IP
+     - Android 模拟器：`http://10.0.2.2:8008/token`
+     - 真机设备：使用主机局域网 IP
+
+**重要提示**:
+- 本项目的 `react-native/` 目录仅包含设置指导文档
+- 不能使用 Expo Go - 必须先构建项目
+- 完整的设置说明和故障排除指南请参考 [react-native/README-zh.md](./react-native/README-zh.md)
+
 ## ⚙️ 配置说明
 
 ### 环境变量
@@ -242,6 +287,13 @@ livekit-agentscope-voice-agent/
 │   ├── kokoro_tts.py                # Kokoro 语音合成服务
 │   ├── local_indexTTS.py            # 本地 Index TTS 服务
 │   └── local_indextts_chaos.py      # 备用本地 TTS 服务
+├── react-native/                     # React Native 移动客户端
+│   ├── README.md                     # 英文 React Native 设置指南
+│   ├── README-zh.md                  # 中文 React Native 设置指南
+│   └── ...                          # React Native 项目文件
+├── server/                          # 令牌服务器实现
+│   ├── server.py                    # 主服务器实现
+│   └── ...                          # 服务器配置文件
 └── pyproject.toml                   # Python 项目配置
 
 # 前端（需要单独克隆）

@@ -26,6 +26,7 @@ A real-time voice AI agent powered by LiveKit, integrating multiple speech recog
 
 ### Frontend (React)
 - **Next.js Application**: Modern web interface for voice interactions
+- **React Native Client**: Mobile application for iOS and Android devices
 - **LiveKit Client SDK**: Real-time audio communication
 - **Responsive Design**: Built with Tailwind CSS and modern React patterns
 
@@ -141,6 +142,50 @@ pnpm dev
 
 5. **Open your browser** and navigate to `http://localhost:3000`
 
+### React Native Setup
+
+For mobile development, the project provides React Native setup guidance in the `react-native/` directory. This directory contains detailed setup documentation, but you need to clone the actual React Native project:
+
+1. **Clone the React Native project**:
+```bash
+git clone https://github.com/livekit-examples/agent-starter-react-native.git
+cd agent-starter-react-native
+```
+
+2. **Refer to setup guidance**:
+   - Check `react-native/README.md` in this project for detailed local connection procedures
+   - This document contains complete steps for connecting to local LiveKit server, Token server, and Agent
+
+3. **Install dependencies**:
+```bash
+bun install
+```
+
+4. **Build the project** (required before first use):
+```bash
+# For iOS simulator
+bun expo run:ios
+
+# For real device
+bun expo run:ios --device
+
+# For Android
+bunx expo run:android
+```
+
+5. **Configure environment**:
+   - Copy `.env.example` to `.env`
+   - Set `EXPO_PUBLIC_TOKEN_SERVER_URL` to point to your token server
+   - For different devices:
+     - iOS Simulator: `http://127.0.0.1:8008/token` or host LAN IP
+     - Android Simulator: `http://10.0.2.2:8008/token`
+     - Real Device: Use host machine LAN IP
+
+**Important Notes**:
+- The `react-native/` directory in this project contains setup guidance documentation only
+- Expo Go cannot be used - you must build the project first
+- Complete setup instructions and troubleshooting guide are available in [react-native/README.md](./react-native/README.md)
+
 ## ⚙️ Configuration
 
 ### Environment Variables
@@ -244,6 +289,13 @@ livekit-agentscope-voice-agent/
 │   ├── kokoro_tts.py                # Kokoro text-to-speech provider
 │   ├── local_indexTTS.py            # Local Index TTS provider
 │   └── local_indextts_chaos.py      # Alternative local TTS provider
+├── react-native/                     # React Native mobile client
+│   ├── README.md                     # English React Native setup guide
+│   ├── README-zh.md                  # Chinese React Native setup guide
+│   └── ...                          # React Native project files
+├── server/                          # Token server implementation
+│   ├── server.py                    # Main server implementation
+│   └── ...                          # Server configuration files
 └── pyproject.toml                   # Python project configuration
 
 # Frontend (clone separately)
