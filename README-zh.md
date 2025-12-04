@@ -292,6 +292,62 @@ pnpm install
 pnpm dev
 ```
 
+## 🔧 网络配置
+
+### WSL2 局域网访问端口转发
+
+在 WSL2 中运行 LiveKit 服务器时，需要配置端口转发以允许局域网内其他设备访问。
+
+**问题**: WSL2 使用 NAT 网络，因此在 WSL2 内运行的服务无法从局域网的其他设备访问，即使从 Windows 主机可以访问。
+
+**解决方案**:
+
+1. **获取 WSL2 IP 地址**:
+```bash
+hostname -I
+# 示例输出: 172.20.10.102
+```
+
+2. **配置 Windows 端口转发**（以管理员身份运行 PowerShell）:
+```powershell
+# 为 LiveKit 端口添加端口转发规则
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=7880 connectaddress=172.20.10.102 connectport=7880
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=7881 connectaddress=172.20.10.102 connectport=7881
+
+# 验证规则
+netsh interface portproxy show all
+
+# 如需删除规则：
+# netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=7880
+# netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=7881
+```
+
+3. **配置 Windows 防火墙**:
+- 打开"Windows Defender 防火墙高级安全"
+- 为 TCP 端口 7880 和 7881 创建入站规则
+- 允许这些端口的连接
+
+4. **在 WSL 中绑定所有接口启动 LiveKit 服务器**:
+```bash
+# 在 WSL2 内部，启动 LiveKit 服务器并绑定到所有接口
+livekit-server --dev --bind 0.0.0.0
+```
+
+5. **从局域网设备访问**:
+- 获取 Windows 主机 IP: `ipconfig`（查找主网络适配器）
+- 通过以下方式访问 LiveKit: `http://[Windows_Host_IP]:7880`
+
+**验证步骤**:
+1. 检查 LiveKit 服务器是否在所有接口上监听: `netstat -tlnp | grep livekit`
+2. 从 Windows 主机测试访问: `http://localhost:7880`
+3. 从其他局域网设备使用 Windows IP 测试访问: `http://[Windows_IP]:7880`
+
+**故障排除**:
+- 确保 Windows 防火墙允许端口 7880 和 7881
+- 检查企业/学校网络限制
+- 验证杀毒软件没有阻止连接
+- 确保 WSL2 IP 没有变化（重启后可能会变化）
+
 ## 🌐 部署
 
 ### 后端部署
