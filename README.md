@@ -60,11 +60,47 @@ cp .env.example .env
 ```
 
 2. **Configure LiveKit environment**:
-```bash
-# Get your LiveKit Server API keys by registering for free at:
-# https://cloud.livekit.io/ (for cloud) or self-host your own server
 
-# Edit .env file with your LiveKit configuration:
+You have two options for LiveKit server setup:
+
+#### Option 1: Self-hosted LiveKit Server (Recommended for Development)
+
+For local development, you can deploy your own LiveKit server:
+
+**Linux Installation:**
+```bash
+curl -sSL https://get.livekit.io | bash
+```
+
+**macOS Installation:**
+```bash
+brew update && brew install livekit
+```
+
+**Start Development Server:**
+```bash
+livekit-server --dev
+```
+
+**Default Development Credentials:**
+- API key: `devkey`
+- API secret: `secret`
+- URL: `ws://localhost:7880`
+
+For production deployment and custom configuration, see the [LiveKit deployment guide](https://docs.livekit.io/home/self-hosting/deployment/).
+
+#### Option 2: LiveKit Cloud
+
+Register for a free account at [https://cloud.livekit.io/](https://cloud.livekit.io/)
+
+**Configure Environment (.env):**
+```bash
+# For local development server
+LIVEKIT_API_KEY=devkey
+LIVEKIT_API_SECRET=secret
+LIVEKIT_URL=ws://localhost:7880
+
+# OR for cloud deployment
 LIVEKIT_API_KEY=your_livekit_api_key
 LIVEKIT_API_SECRET=your_livekit_api_secret
 LIVEKIT_URL=wss://your-livekit-server.url
@@ -81,25 +117,22 @@ uv run agent_server_with_metrics.py start
 
 ### Frontend Setup
 
-> **Note**: The frontend is based on [livekit-examples/agent-starter-react](https://github.com/livekit-examples/agent-starter-react)
+The frontend is based on [livekit-examples/agent-starter-react](https://github.com/livekit-examples/agent-starter-react). You'll need to clone it separately:
 
-1. **Navigate to frontend directory**:
+1. **Clone the frontend repository**:
 ```bash
+git clone https://github.com/livekit-examples/agent-starter-react.git
 cd agent-starter-react
 ```
 
-2. **(Optional) Update to latest version**:
-```bash
-# If you want to pull the latest updates from LiveKit examples:
-git remote add upstream https://github.com/livekit-examples/agent-starter-react.git
-git fetch upstream
-git merge upstream/main
-```
-
-3. **Install dependencies**:
+2. **Install dependencies**:
 ```bash
 pnpm install
 ```
+
+3. **Configure LiveKit connection**:
+   - Update the connection settings in the frontend to match your LiveKit server configuration
+   - For local development, use the dev credentials mentioned above
 
 4. **Run development server**:
 ```bash
@@ -211,9 +244,10 @@ livekit-agentscope-voice-agent/
 │   ├── kokoro_tts.py                # Kokoro text-to-speech provider
 │   ├── local_indexTTS.py            # Local Index TTS provider
 │   └── local_indextts_chaos.py      # Alternative local TTS provider
-├── agent-starter-react/             # React frontend (based on livekit-examples)
-│   └── # Originally from: https://github.com/livekit-examples/agent-starter-react
 └── pyproject.toml                   # Python project configuration
+
+# Frontend (clone separately)
+git clone https://github.com/livekit-examples/agent-starter-react.git
 ```
 
 ### Adding Custom Providers
@@ -249,22 +283,13 @@ pnpm build
 pnpm start
 ```
 
-### Frontend Maintenance
+### Frontend Updates
 
-Since the frontend is based on LiveKit examples, you may want to keep it updated:
+To update the frontend to the latest version:
 
 ```bash
 cd agent-starter-react
-
-# Check for updates periodically
-git remote -v  # Verify upstream remote exists
-git fetch upstream
-git log --oneline HEAD..upstream/main  # See what's new
-
-# Merge updates (when needed)
-git merge upstream/main
-
-# Resolve any conflicts and test
+git pull origin main
 pnpm install
 pnpm dev
 ```
@@ -297,6 +322,49 @@ pnpm build
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🎯 Additional Examples and Resources
+
+### LiveKit Example Applications
+
+Besides the included React frontend, you can explore these official LiveKit examples:
+
+- **[LiveKit Meet](https://github.com/livekit-examples/meet)** - Video conferencing application similar to Zoom/Meet
+- **[LiveKit Agents Examples](https://github.com/livekit/agents/tree/main/examples)** - Various voice agent implementations
+- **[Spatial Audio Example](https://github.com/livekit-examples/spatial-audio)** - 3D spatial audio demonstrations
+
+### Server Customization and Management
+
+For advanced server setup and customization, refer to these guides:
+
+#### Token Generation
+- **[Generating Tokens](https://docs.livekit.io/home/server/generating-tokens/)** - Learn how to create authentication tokens for participants
+- Custom token validation and permissions
+- Room access control and security
+
+#### Room Management
+- **[Managing Rooms](https://docs.livekit.io/home/server/managing-rooms/)** - Create, configure, and manage rooms
+- Room properties and configuration options
+- Room lifecycle management
+
+#### Participant Management
+- **[Managing Participants](https://docs.livekit.io/home/server/managing-participants/)** - Control participant permissions and access
+- Track participant state and metadata
+- Handle participant events and moderation
+
+### Server-Side Integration Examples
+
+```python
+# Example: Token generation for room access
+from livekit import api
+
+livekit_api = api.LiveKitAPI()
+token = livekit_api.create_token(
+    api.VideoGrant(room_join=True, room="my-room"),
+    identity="user-123",
+    name="Display Name"
+)
+```
 
 ## 🔗 Related Projects
 
