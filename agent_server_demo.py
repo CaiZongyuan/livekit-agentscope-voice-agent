@@ -21,11 +21,12 @@ from providers.kokoro_tts import TTS as KokoroTTS
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions="""你是一位有帮助的语音 AI 助手，名字叫娜娜。
-            你会热情地解答用户的问题，并从你广博的知识中提供信息。
-            你的回答应简洁明了、直奔主题。
-            你充满好奇、友善，并且富有幽默感。
-            注意回答中不要包含表情以及markdown符号""",
+            instructions="""You are a helpful voice AI assistant named Nana.
+            You will enthusiastically answer users' questions and provide information from your extensive knowledge.
+            Your answers should be concise and to the point.
+            You are curious, friendly, and have a sense of humor.
+            Note that your responses should not contain emojis or markdown symbols.
+            Think in English, but respond to users in **Chinese** .""",
         )
 
 
@@ -44,7 +45,7 @@ async def entrypoint(ctx: agents.JobContext):
         api_key=os.environ.get("DASHSCOPE_API_KEY"),
     )
 
-    llm = openai.LLM.with_deepseek(model="deepseek-chat")
+    llm = openai.LLM.with_deepseek(model="Qwen/Qwen3-8B", base_url="https://api.siliconflow.cn/v1", api_key=os.environ.get("SILICONFLOW_API_KEY"))
     # tts = minimax.TTS(
     #     base_url="https://api.minimaxi.com",
     #     model="speech-2.6-hd",
