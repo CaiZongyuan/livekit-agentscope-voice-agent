@@ -312,10 +312,32 @@ PORT=8008
 
 ### 启动服务
 
+#### 方法一：使用启动脚本（推荐）
+
+项目提供了便捷的启动脚本来依次启动所有服务：
+
 ```bash
-# 启动 Token Server
-cd /path/to/livekit-agentscope-voice-agent
-python server/server.py
+# 启动所有服务（LiveKit 服务器 + Token 服务器 + 语音代理）
+cd server
+./start_services.sh
+
+# 停止所有服务
+./stop_services.sh
+```
+
+启动脚本将按顺序执行：
+1. **启动 LiveKit 服务器**（端口 7880）
+2. **启动 Token 服务器**（端口 8008）
+3. **启动语音代理**（集成 AgentScope）
+4. 等待每个服务就绪后再启动下一个
+5. 显示客户端连接地址
+
+#### 方法二：手动启动
+
+```bash
+# 仅启动 Token Server
+cd /path/to/livekit-agentscope-voice-agent/server
+uv run python server.py
 
 # Token Server 将在 http://localhost:8008 启动
 # 主要端点：
@@ -323,6 +345,25 @@ python server/server.py
 # - POST /rooms - 创建房间
 # - GET /health - 健康检查
 ```
+
+#### 完整开发环境搭建
+
+如需完整的开发环境，需要运行三个服务：
+
+1. **LiveKit 服务器**（WebRTC 媒体服务器）
+   ```bash
+   livekit-server --dev --bind 0.0.0.0 --port 7880
+   ```
+
+2. **Token 服务器**（认证服务）
+   ```bash
+   cd server && uv run python server.py
+   ```
+
+3. **语音代理**（AgentScope 集成）
+   ```bash
+   cd .. && uv run python agent_server_demo.py
+   ```
 
 ## 故障排查
 
