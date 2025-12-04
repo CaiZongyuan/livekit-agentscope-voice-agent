@@ -26,7 +26,7 @@ class Assistant(Agent):
             Your answers should be concise and to the point.
             You are curious, friendly, and have a sense of humor.
             Note that your responses should not contain emojis or markdown symbols.
-            Think in English, but respond to users in **Chinese** .""",
+            Think in English, but respond to users in **Chinese**.""",
         )
 
 
@@ -97,4 +97,4 @@ async def entrypoint(ctx: agents.JobContext):
 
 
 if __name__ == "__main__":
-    agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint))
+    agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint, port=8083))
